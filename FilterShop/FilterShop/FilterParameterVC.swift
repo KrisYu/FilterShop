@@ -41,15 +41,15 @@ extension FilterParameterVC : NSTableViewDelegate, NSTableViewDataSource {
     
     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
         
-        guard let view = tableView.make(withIdentifier: "cell", owner: self) as? NSTableCellView,
+        guard let view = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "cell"), owner: self) as? NSTableCellView,
             let key = filter?.inputKeys[row],
             let paraDict = filter?.attributes[key] as? [String: Any]
             else { return nil }
         
-        let colId = tableColumn?.identifier ?? ""
+        let colId = tableColumn?.identifier ?? NSUserInterfaceItemIdentifier(rawValue: "")
         var viewText = ""
         
-        switch colId {
+        switch colId.rawValue {
         case "name":
             viewText = key
         case "description":
