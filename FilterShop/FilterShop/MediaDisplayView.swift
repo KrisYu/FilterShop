@@ -47,7 +47,7 @@ class MediaDisplayView: NSView {
     }
     
     /// Options of the drag and drop eare, only receive images
-    let options = [NSPasteboardURLReadingContentsConformToTypesKey: NSImage.imageTypes()]
+    let options = [NSPasteboard.ReadingOptionKey.urlReadingContentsConformToTypes: NSImage.imageTypes]
     
     /// Set up ImageView and layer for filter
     override func draw(_ dirtyRect: NSRect) {
@@ -61,12 +61,12 @@ class MediaDisplayView: NSView {
 
         
         NSColor.gray.setFill()
-        NSRectFill(dirtyRect)
+        dirtyRect.fill()
     }
     
     /// Register drag and drop, also unregister for imageView, since imageView support drag and drop naturally
     override func awakeFromNib() {
-        register(forDraggedTypes: [NSURLPboardType])
+        registerForDraggedTypes([.fileURL, .URL])
         imageView.unregisterDraggedTypes()
     }
     
@@ -76,7 +76,7 @@ class MediaDisplayView: NSView {
     func shouldAllowDrag(_ draggingInfo: NSDraggingInfo) -> Bool {
         
         var canAccept = false
-        let pasteBoard = draggingInfo.draggingPasteboard()
+        let pasteBoard = draggingInfo.draggingPasteboard
         
         if pasteBoard.canReadObject(forClasses: [ NSURL.self ], options: options) {
             canAccept = true
@@ -107,7 +107,7 @@ class MediaDisplayView: NSView {
     override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
         isReceivingDrag = false
         
-        let pasteBoard = sender.draggingPasteboard()
+        let pasteBoard = sender.draggingPasteboard
         
         if let urls = pasteBoard.readObjects(forClasses: [NSURL.self], options: options) as? [URL],
             let fileUrl = urls.first {

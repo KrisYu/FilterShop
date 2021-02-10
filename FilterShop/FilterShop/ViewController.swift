@@ -115,7 +115,7 @@ class ViewController: NSViewController {
         
         guard let window = self.view.window else { return }
         openPanel.beginSheetModal(for: window) { (result) in
-            if result == NSModalResponseOK {
+            if result == NSApplication.ModalResponse.OK {
                 if let url = openPanel.url {
                     self.mediaView.imageUrl = url
                 }
@@ -131,7 +131,7 @@ class ViewController: NSViewController {
     // Help Menu Item
     @IBAction func helpMenuItemTouched(_ sender: NSMenuItem) {
         let url = URL(string: "https://github.com/KrisYu/FilterShop")!
-        NSWorkspace.shared().open(url)
+        NSWorkspace.shared.open(url)
     }
     
     
@@ -140,19 +140,19 @@ class ViewController: NSViewController {
     */
     @IBAction func saveAs(_ sender: AnyObject){
         let savePanel = NSSavePanel()
-        saveOptions = IKSaveOptions(imageProperties: [:], imageUTType: kUTTypePNG as String!)
+        saveOptions = IKSaveOptions(imageProperties: [:], imageUTType: kUTTypePNG as String)
         saveOptions.addAccessoryView(to: savePanel)
         
         guard let window = self.view.window, let _ = mediaView.ciimage else { return }
         savePanel.beginSheetModal(for: window) { (result) in
-            if result == NSFileHandlingPanelOKButton {
-                self.savePanelDidEnd(sheet: savePanel, returnCode: result)
+            if result == NSApplication.ModalResponse.OK {
+                self.savePanelDidEnd(sheet: savePanel, returnCode: result.rawValue)
             }
         }
     }
     
     func savePanelDidEnd (sheet: NSSavePanel, returnCode: NSInteger) {
-        if returnCode == NSModalResponseOK {
+        if returnCode == NSApplication.ModalResponse.OK.rawValue {
             guard let newUTType = saveOptions.imageUTType as CFString?,
                 let url = sheet.url as CFURL?,
                 let cgimage = mediaView.export(filters: chosenFilters),
@@ -189,7 +189,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
             
             // cell display Category and Filter in a different way
             if filterName.hasPrefix("CICategory") {
-                guard let cell = tableView.make(withIdentifier: "CategoryCell", owner: self) as? NSTableCellView else {
+                guard let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "CategoryCell"), owner: self) as? NSTableCellView else {
                     return nil
                 }
                 
@@ -197,7 +197,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
                 cell.textField?.stringValue = text
                 return cell
             } else {
-                guard let cell = tableView.make(withIdentifier: "FilterCell", owner: self) as? NSTableCellView,
+                guard let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "FilterCell"), owner: self) as? NSTableCellView,
                     let text = CIFilter.localizedName(forFilterName: filterName) else {
                         return nil
                 }
@@ -208,7 +208,7 @@ extension ViewController: NSTableViewDelegate, NSTableViewDataSource {
             
             let filterName = chosenFilters[row].name
             
-            guard let cell = tableView.make(withIdentifier: "chosenFilterCell", owner: self) as? NSTableCellView else { return nil }
+            guard let cell = tableView.makeView(withIdentifier: NSUserInterfaceItemIdentifier(rawValue: "chosenFilterCell"), owner: self) as? NSTableCellView else { return nil }
             
             // display the filter name in readable way
             cell.textField?.stringValue = CIFilter.localizedName(forFilterName: filterName) ?? "Unknown Filter"
